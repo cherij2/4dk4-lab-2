@@ -28,7 +28,7 @@
 
 /******************************************************************************/
 // CHANGED !!!!
-#define PACKET_ARRIVAL_RATE 1000, 1750, 1850, 1900, 1925, 1950, 1975, 2000, 2025  /* packets per second */ 
+#define PACKET_ARRIVAL_RATE 1900, 1925, 1950, 1975, 2000, 2025  /* packets per second */ 
 #define PACKET_LENGTH 500 /* bits */
 #define LINK_BIT_RATE 1e6 /* bits per second */
 #define RUNLENGTH 10e6 /* packets */
