@@ -27,14 +27,14 @@
 #define _SIMPARAMETERS_H_
 
 /******************************************************************************/
-
-#define PACKET_ARRIVAL_RATE 100, 500, 1000, 1750, 2000, 2250, 2500  /* packets per second */
+// CHANGED !!!!
+#define PACKET_ARRIVAL_RATE 1000, 1750, 1850, 1900, 1925, 1950, 1975, 2000, 2025  /* packets per second */ 
 #define PACKET_LENGTH 500 /* bits */
 #define LINK_BIT_RATE 1e6 /* bits per second */
 #define RUNLENGTH 10e6 /* packets */
 
 /* Comma separated list of random seeds to run. */
-#define RANDOM_SEED_LIST 400381481, 400343389 
+#define RANDOM_SEED_LIST 400381481, 400343389, 78932092, 78936922, 54936062, 57693476, 789010100, 84892965
 
 #define PACKET_XMT_TIME ((double) PACKET_LENGTH/LINK_BIT_RATE)
 #define BLIPRATE (RUNLENGTH/1000)
