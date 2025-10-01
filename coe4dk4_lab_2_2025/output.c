@@ -1,4 +1,3 @@
-
 /*
  * 
  * Simulation_Run of A Single Server Queueing System
@@ -54,10 +53,10 @@ output_progress_msg_to_screen(Simulation_Run_Ptr simulation_run)
     percentage_done =
       100 * (double) data->number_of_packets_processed/RUNLENGTH;
 
-    printf("%3.0f%% ", percentage_done);
+    //printf("%3.0f%% ", percentage_done);
 
-    printf("Successfully Xmtted Pkts  = %ld (Arrived Pkts = %ld) \r", 
-	   data->number_of_packets_processed, data->arrival_count);
+    //printf("Successfully Xmtted Pkts  = %ld (Arrived Pkts = %ld) \r", 
+	  // data->number_of_packets_processed, data->arrival_count);
 
     fflush(stdout);
   }
@@ -77,23 +76,24 @@ output_results(Simulation_Run_Ptr simulation_run)
 
   data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
 
-  printf("\n");
-  printf("Random Seed = %d \n", data->random_seed);
-  printf("Packet arrival count = %ld \n", data->arrival_count);
+  // printf("\n");
+  // printf("Random Seed = %d \n", data->random_seed);
+  // printf("Packet arrival count = %ld \n", data->arrival_count);
 
   xmtted_fraction = (double) data->number_of_packets_processed /
     data->arrival_count;
 
-  printf("Transmitted packet count  = %ld (Service Fraction = %.5f)\n",
-	 data->number_of_packets_processed, xmtted_fraction);
+  // printf("Transmitted packet count  = %ld (Service Fraction = %.5f)\n",
+	//  data->number_of_packets_processed, xmtted_fraction);
 
-  printf("Arrival rate = %.3f packets/second \n", data->arrival_rate);
+  // printf("Arrival rate = %.3f packets/second \n", data->arrival_rate);
 
-  printf("Mean Delay (msec) = %.2f \n",
-	 1e3*data->accumulated_delay/data->number_of_packets_processed);
+  // printf("Mean Delay (msec) = %.2f \n",
+	//  1e3*data->accumulated_delay/data->number_of_packets_processed);
 
-  printf("\n");
+  printf("%f,%d,%.2f\n" , data->arrival_rate, data->random_seed, 1e3*data->accumulated_delay/data->number_of_packets_processed);
+  // FILE *fp = fopen("simulation_results.csv", "w");
+  // fprintf(fp, "%f,%d,%.2f\n" , data->arrival_rate, data->random_seed, 1e3*data->accumulated_delay/data->number_of_packets_processed);
+  // fclose(fp); 
+    
 }
-
-
-
