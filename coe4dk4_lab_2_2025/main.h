@@ -33,6 +33,18 @@
 
 /******************************************************************************/
 
+/*
+
+typedef struct _fifoqueue_
+{
+  struct _queue_container_ * front_ptr;
+  struct _queue_container_ * back_ptr;
+  int size;
+} Fifoqueue, * Fifoqueue_Ptr;
+
+
+*/
+
 typedef struct _simulation_run_data_ 
 {
   Fifoqueue_Ptr buffer;
@@ -43,10 +55,13 @@ typedef struct _simulation_run_data_
   double accumulated_delay;
   unsigned random_seed;
   double arrival_rate;
+  double delay_per_packet;
+  long int delay_above_20ms;
 } Simulation_Run_Data, * Simulation_Run_Data_Ptr;
 
 typedef enum {XMTTING, WAITING} Packet_Status;
 
+//packets coming into and out of buffer in part 2 
 typedef struct _packet_ 
 {
   double arrive_time;
@@ -66,5 +81,3 @@ main(void);
 /******************************************************************************/
 
 #endif /* main.h */
-
-

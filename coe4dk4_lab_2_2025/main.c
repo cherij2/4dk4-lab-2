@@ -57,8 +57,14 @@ main(void)
 
   unsigned RANDOM_SEEDS[] = {RANDOM_SEED_LIST, 0};
   unsigned ARRIVAL_RATES[] = {PACKET_ARRIVAL_RATE, 0};
+  //LAB 2 
   unsigned arr_rates;
   unsigned random_seed;
+  
+  //LAB 3
+  double serv_rate = PACKET_LENGTH / LINK_BIT_RATE; 
+  double serv_time = 1/serv_rate; // we want this to be less than 20ms for 98% of the time
+  
   int j=0;
   int i=0;
 
@@ -66,7 +72,7 @@ main(void)
    * Loop for each random number generator seed, doing a separate
    * simulation_run run for each.
    */
-  //for loop  for 500, 1k, 2k, 3k
+  //for loop  for 1900, 1925, 1950, 1975, 2000, 2025 
   while((arr_rates = ARRIVAL_RATES[i++]) != 0) {
     j = 0;
   while ((random_seed = RANDOM_SEEDS[j++]) != 0) {
@@ -88,9 +94,10 @@ main(void)
     data.number_of_packets_processed = 0;
     data.accumulated_delay = 0.0;
     data.random_seed = random_seed;
+    //LAB2
     data.arrival_rate = arr_rates;
-    //data.arr_rate  = ARRIVAL....
- 
+
+
     /* 
      * Create the packet buffer and transmission link, declared in main.h.
      */
@@ -108,17 +115,21 @@ main(void)
      * Schedule the initial packet arrival for the current clock time (= 0).
      */
 
-    schedule_packet_arrival_event(simulation_run, 
-				  simulation_run_get_time(simulation_run));
+    schedule_packet_arrival_event(simulation_run,           //set the .function member of simulation run to packet_arrival_event, this function runs every packet for arrivals + sets up and runs transmission function
+				  simulation_run_get_time(simulation_run));         //set the start time of this event
 
     /* 
      * Execute events until we are finished. 
      */
-
+    
+    CSVInit("PART3_DELAY.csv");               
+    
+    
     while(data.number_of_packets_processed < RUNLENGTH) {
-      simulation_run_execute_event(simulation_run);
+      simulation_run_execute_event(simulation_run);        //runs the function in the .function member of simulation_run, also includes the .attatchement member of simulation_run in the running of .function  
     }
 
+    CSVClose();
     /*
      * Output results and clean up after ourselves.
      */

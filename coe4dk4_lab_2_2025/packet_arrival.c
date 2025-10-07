@@ -33,8 +33,12 @@
 
 /*
  * This function will schedule a packet arrival at a time given by
- * event_time. At that time the function "packet_arrival" (located in
- * packet_arrival.c) is executed. An object can be attached to the event and
+ * event_time. 
+ * 
+ * At that time the function "packet_arrival" (located in
+ * packet_arrival.c) is executed. 
+ * 
+ * An object can be attached to the event and
  * can be recovered in packet_arrival.c.
  */
 
@@ -55,9 +59,15 @@ schedule_packet_arrival_event(Simulation_Run_Ptr simulation_run,
 
 /*
  * This is the event function which is executed when a packet arrival event
- * occurs. It creates a new packet object and places it in either the fifo
- * queue if the server is busy. Otherwise it starts the transmission of the
- * packet. It then schedules the next packet arrival event.
+ * occurs. 
+ * 
+ * It creates a new packet object and places it in either the fifo
+ * queue if the server is busy. 
+ * 
+ * Otherwise it starts the transmission of the
+ * packet. 
+ * 
+ * It then schedules the next packet arrival event.
  */
 
 void
@@ -69,9 +79,9 @@ packet_arrival_event(Simulation_Run_Ptr simulation_run, void * ptr)
   data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
   data->arrival_count++;
 
-  new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));
-  new_packet->arrive_time = simulation_run_get_time(simulation_run);
-  new_packet->service_time = get_packet_transmission_time();
+  new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));                  //make new packet datatype
+  new_packet->arrive_time = simulation_run_get_time(simulation_run);  //get the arrival time/start time of the packet, and set it to arrive time member
+  new_packet->service_time = get_packet_transmission_time();          // PACKET_LENGTH/LINK_BIT_RATE, (bits * sec / bit) how many seconds for each packet to service
   new_packet->status = WAITING;
 
   /* 
@@ -79,10 +89,13 @@ packet_arrival_event(Simulation_Run_Ptr simulation_run, void * ptr)
    * the buffer.
    */
 
+  //WE NEED TO MODIFY THIS FOR PT 3
+  //ADD START AND END TIMES, VARIABLE TO TRACK HOW MANY PACKETS EXCEED 20 MS WAIT
+
   if(server_state(data->link) == BUSY) {
-    fifoqueue_put(data->buffer, (void*) new_packet);
+    fifoqueue_put(data->buffer, (void*) new_packet);                        //put in buffer
   } else {
-    start_transmission_on_link(simulation_run, new_packet, data->link);
+    start_transmission_on_link(simulation_run, new_packet, data->link);     //start transmission function 
   }
 
   /* 

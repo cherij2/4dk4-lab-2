@@ -323,13 +323,13 @@ simulation_run_execute_event(Simulation_Run_Ptr simulation_run)
 {
   Event_Container_Ptr current_container;
 
-  current_container = simulation_run_get_event(simulation_run);
-  simulation_run_set_time(simulation_run, 
+  current_container = simulation_run_get_event(simulation_run); //gets the next container at the top of the queue.
+  simulation_run_set_time(simulation_run,                       //Given a pointer to a simulation_run, set the clock time.
 			  current_container->occurrence_time);
 
   TRACE(printf("\n");)
   TRACE(event_print_type(current_container->event);)
-  TRACE(printf("occurring at %.3f\n", simulation_run_get_time(simulation_run));)
+  TRACE(printf("occurring at %.3f\n", simulation_run_get_time(simulation_run));) //
 
   (*(current_container->event.function))(simulation_run,
 			current_container->event.attachment);

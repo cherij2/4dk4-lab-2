@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "output.h": "c",
+        "stdio.h": "c",
+        "packet_transmission.h": "c",
+        "cleanup_memory.h": "c",
+        "functional": "c"
+    }
+}

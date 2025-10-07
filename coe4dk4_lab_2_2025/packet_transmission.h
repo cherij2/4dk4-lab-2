@@ -35,6 +35,9 @@
 /*
  * Function prototypes
  */
+void CSVInit(const char*);
+void CSVWriter(double, int);
+void CSVClose();
 
 void
 start_transmission_on_link(Simulation_Run_Ptr, Packet_Ptr, Server_Ptr);
