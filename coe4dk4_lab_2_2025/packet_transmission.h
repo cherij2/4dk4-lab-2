@@ -36,7 +36,8 @@
  * Function prototypes
  */
 void CSVInit(const char*);
-void CSVWriter(double, int);
+void CSVNewLine(const char*);
+void CSVWriter(double, long int, long int, double);
 void CSVClose();
 
 void

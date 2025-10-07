@@ -25,6 +25,7 @@
 
 
 #include <stdio.h>
+#include <time.h>
 
 #include "trace.h"
 #include "main.h"
@@ -44,7 +45,7 @@
  * event and is recovered in end_packet_transmission.c.
  */
 
-static FILE* LAB2_Excel = NULL;
+
 
 long
 schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run,
@@ -63,6 +64,37 @@ schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run,
 /******************************************************************************/
 
 /*
+PART 3 ADDITION
+
+csv initializer, writer, and closer functions so that it can be used/referencesd in packet_transmission.c as well as main.c (function is setup in header file)
+*/
+static FILE* LAB2_Excel = NULL;
+
+void CSVInit(const char* file) {
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);        //getting the time now
+  /*FILE**/ LAB2_Excel = fopen(file, "a"); //the FILE* made it a local variable and functions were writing to NULL because global variable was destroyed
+  fprintf(LAB2_Excel, "NEW_TRIAL, %02d:%02d:%02d \n Arrival Rate, total number of Delay above 20ms, Total Packets Processed, Percentage of Packets w Delay > 20ms \n", t->tm_hour, t->tm_min, t->tm_sec);
+}
+
+void CSVNewLine(const char* file) {
+  /*FILE**/ LAB2_Excel = fopen(file, "a"); //the FILE* made it a local variable and functions were writing to NULL because global variable was destroyed
+}
+
+// just wanted to try implementation of writing every single line of data, since there is 10 million packets i am commenting that
+//making it print just the final value, of all delay counts etc
+void CSVWriter(double arr_rate, long int count_of_delays, long int total_number_processed, double percentage_delayed) { //dont put fflush here, this is what was ruining perfomrance, writing every. single. line.
+  fprintf(LAB2_Excel, "%f, %d, %ld, %f \n", arr_rate, count_of_delays, total_number_processed, percentage_delayed);
+  fflush(LAB2_Excel);     
+}
+
+void CSVClose() {
+  fclose(LAB2_Excel);   //does fflush and fclose in the same function 
+}
+
+
+
+/*
  * This is the event function which is executed when the end of a packet
  * transmission event occurs. 
  * 
@@ -72,22 +104,6 @@ schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run,
  * If that is the case it
  * starts the transmission of the next packet.
  */
-
-void CSVInit(const char* file) {
-  FILE* LAB2_Excel = fopen(file, "w");
-  fprintf(LAB2_Excel, "Delay above 20ms \n");
-}
-
-void CSVWriter(double delay, int count_of_delays) {
-  fprintf(LAB2_Excel, "%f, %d \n", delay, count_of_delays);
-  fflush(LAB2_Excel);
-}
-
-void CSVClose() {
-  fclose(LAB2_Excel);
-  LAB2_Excel == NULL;
-}
-
 void
 end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void * link)
 {
@@ -110,24 +126,27 @@ end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void * link)
   data->accumulated_delay += simulation_run_get_time(simulation_run) -    //SIMILAR TO THIS BUT INDIVIDUALLY AND RESET EVERY PACKET
     this_packet->arrive_time;
   
-  //LAB3
+  //PART3
   /*
   Get delay value, 
-  if statement to 
-  add a list to data struct, maybe delayValues[]
-  add delay values to list in this funciton 
+  if statement to add to count of delayed>20ms values
   extract values in main.c and excel it
   
   */
+ data->delay_per_packet = 0;
   data->delay_per_packet = simulation_run_get_time(simulation_run) -    //INDIVIDUAL DELAY PER PACKET, IS RESET EVERY TRANSMISSION
   this_packet->arrive_time;
 
-  if(data->delay_per_packet > 20) {                                     //if delay is higher than constraint, add it to a counter, we can use this later to find percent which are unaccepatble
-    (data->delay_above_20ms)++;
+  
+
+  if(data->delay_per_packet > 0.020) {                                     //if delay is higher than constraint, add it to a counter, we can use this later to find percent which are unaccepatble
+    printf("delay!\t%f\t%ld / %ld\n", data->delay_per_packet, data->delay_above_20ms, data->number_of_packets_processed);
+    // printf("%ld \n", data->number_of_packets_processed);              //to see see progress in terminal 
+    data->delay_above_20ms++;                                            //to keep count of delay packets
   }
   
   /*ADD CSV FUNCTION IMPELEMENTATION HERE*/
-  CSVWriter(data->delay_per_packet, data->delay_above_20ms);
+  // CSVWriter(data->delay_per_packet, data->delay_above_20ms);
 
 
 

@@ -72,9 +72,12 @@ main(void)
    * Loop for each random number generator seed, doing a separate
    * simulation_run run for each.
    */
-  //for loop  for 1900, 1925, 1950, 1975, 2000, 2025 
+  
+  //for loop  for PACKET_ARRIVAL_RATE array in simparameters.h
+  CSVInit("PART3_DELAY.csv");
   while((arr_rates = ARRIVAL_RATES[i++]) != 0) {
     j = 0;
+    
   while ((random_seed = RANDOM_SEEDS[j++]) != 0) {
 
     simulation_run = simulation_run_new(); /* Create a new simulation run. */
@@ -96,6 +99,7 @@ main(void)
     data.random_seed = random_seed;
     //LAB2
     data.arrival_rate = arr_rates;
+    data.delay_above_20ms = 0;
 
 
     /* 
@@ -118,18 +122,24 @@ main(void)
     schedule_packet_arrival_event(simulation_run,           //set the .function member of simulation run to packet_arrival_event, this function runs every packet for arrivals + sets up and runs transmission function
 				  simulation_run_get_time(simulation_run));         //set the start time of this event
 
+
+      //PART 3, CSV WRITER INIT, FUCNTION IN PACKET_TRANSMIT.c
+    
+    
+    
+    
     /* 
      * Execute events until we are finished. 
      */
     
-    CSVInit("PART3_DELAY.csv");               
-    
-    
     while(data.number_of_packets_processed < RUNLENGTH) {
+      // printf("did another packet! \n");
       simulation_run_execute_event(simulation_run);        //runs the function in the .function member of simulation_run, also includes the .attatchement member of simulation_run in the running of .function  
     }
 
-    CSVClose();
+    
+    
+
     /*
      * Output results and clean up after ourselves.
      */
@@ -140,7 +150,7 @@ main(void)
 
   // getchar();   /* Pause before finishing. */  
 }
-
+  CSVClose();
   return 0;
 }
 
