@@ -48,7 +48,7 @@
 
 
 long
-schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run,
+schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run,           //PT4 BECAUSE OF THIS WE NEED TO MAKE COPIES OF EVERY PEICE OF CODE, CAN'T HAVE 2 .ARGUMENTS 
 				       double event_time,
 				       Server_Ptr link)
 {
@@ -57,6 +57,19 @@ schedule_end_packet_transmission_event(Simulation_Run_Ptr simulation_run,
   event.description = "Packet Xmt End";
   event.function = end_packet_transmission_event;
   event.attachment = (void *) link;
+
+  return simulation_run_schedule_event(simulation_run, event, event_time);        //starts another .function call, this time it is set to end_packet_transmission_event, how does it go back to arrival?
+}
+long
+schedule_end_packet_transmission_event2(Simulation_Run_Ptr simulation_run,           //PT4 BECAUSE OF THIS WE NEED TO MAKE COPIES OF EVERY PEICE OF CODE, CAN'T HAVE 2 .ARGUMENTS 
+				       double event_time,
+				       Server_Ptr link2)
+{
+  Event event;
+
+  event.description = "Packet Xmt End";
+  event.function = end_packet_transmission_event2;
+  event.attachment = (void *) link2;
 
   return simulation_run_schedule_event(simulation_run, event, event_time);        //starts another .function call, this time it is set to end_packet_transmission_event, how does it go back to arrival?
 }
@@ -167,6 +180,71 @@ end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void * link)
   }
 }
 
+
+//PART 4, COPY OF END_TRANSMISSION_EVENT FOR LINK2
+void
+end_packet_transmission_event2(Simulation_Run_Ptr simulation_run, void * link2)
+{
+  Simulation_Run_Data_Ptr data;
+  Packet_Ptr this_packet, next_packet;
+
+  TRACE(printf("End Of Packet.\n"););
+
+  data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+  /* 
+   * Packet transmission is finished. Take the packet off the data link.
+   */
+
+  this_packet = (Packet_Ptr) server_get(link2);
+
+  /* Collect statistics. */
+  //PT 3, ADDING IMPLEMENTATION OF DELAY PER PACKET
+  data->number_of_packets_processed++;
+  data->accumulated_delay += simulation_run_get_time(simulation_run) -    //SIMILAR TO THIS BUT INDIVIDUALLY AND RESET EVERY PACKET
+    this_packet->arrive_time;
+  
+  //PART3
+  /*
+  Get delay value, 
+  if statement to add to count of delayed>20ms values
+  extract values in main.c and excel it
+  
+  */
+ data->delay_per_packet = 0;
+  data->delay_per_packet = simulation_run_get_time(simulation_run) -    //INDIVIDUAL DELAY PER PACKET, IS RESET EVERY TRANSMISSION
+  this_packet->arrive_time;
+
+  
+
+  if(data->delay_per_packet > 0.020) {                                     //if delay is higher than constraint, add it to a counter, we can use this later to find percent which are unaccepatble
+    printf("delay!\t%f\t%ld / %ld\n", data->delay_per_packet, data->delay_above_20ms, data->number_of_packets_processed);
+    // printf("%ld \n", data->number_of_packets_processed);              //to see see progress in terminal 
+    data->delay_above_20ms++;                                            //to keep count of delay packets
+  }
+  
+  /*ADD CSV FUNCTION IMPELEMENTATION HERE*/
+  // CSVWriter(data->delay_per_packet, data->delay_above_20ms);
+
+
+
+  /* Output activity blip every so often. */
+  output_progress_msg_to_screen(simulation_run);
+
+  /* This packet is done ... give the memory back. */
+  xfree((void *) this_packet);
+
+  /* 
+   * See if there is are packets waiting in the buffer. If so, take the next one
+   * out and transmit it immediately.
+  */
+
+  if(fifoqueue_size(data->buffer) > 0) {                                          //does everything in the buffer and then terminates, goes back to packet_arrival.c to repeat cycle
+    next_packet = (Packet_Ptr) fifoqueue_get(data->buffer);
+    start_transmission_on_link(simulation_run, next_packet, link2);
+  }
+}
+
 /*
  * This function ititiates the transmission of the packet passed to the
  * function. 
@@ -191,6 +269,24 @@ start_transmission_on_link(Simulation_Run_Ptr simulation_run,
   schedule_end_packet_transmission_event(simulation_run,
 	 simulation_run_get_time(simulation_run) + this_packet->service_time,      //time it ends it based on avg service time
 	 (void *) link);
+}
+
+
+
+void
+start_transmission_on_link2(Simulation_Run_Ptr simulation_run, 
+			   Packet_Ptr this_packet,
+			   Server_Ptr link2)
+{
+  TRACE(printf("Start Of Packet.\n");)
+
+  server_put(link2, (void*) this_packet);
+  this_packet->status = XMTTING;
+
+  /* Schedule the end of packet transmission event. */
+  schedule_end_packet_transmission_event(simulation_run,
+	 simulation_run_get_time(simulation_run) + this_packet->service_time,      //time it ends it based on avg service time
+	 (void *) link2);
 }
 
 /*

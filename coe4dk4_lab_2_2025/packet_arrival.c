@@ -92,11 +92,18 @@ packet_arrival_event(Simulation_Run_Ptr simulation_run, void * ptr)
   //WE NEED TO MODIFY THIS FOR PT 3
   //ADD START AND END TIMES, VARIABLE TO TRACK HOW MANY PACKETS EXCEED 20 MS WAIT
 
-  if(server_state(data->link) == BUSY) {
+  //WE NEED TO ADD ANOTHER SERVER(DATA->LINK) FOR PT 4
+
+  if(server_state(data->link) == BUSY && server_state(data->link2) == BUSY) {
     fifoqueue_put(data->buffer, (void*) new_packet);                        //put in buffer
-  } else {
+  } else if (server_state(data->link) == FREE) {
     start_transmission_on_link(simulation_run, new_packet, data->link);     //start transmission function 
+  }                                                                          //PT4 WE HAVE TO ADD CONDITIONALS ARGUMENTS TO IF/ELSE STATEMENT SO THAT IT DRAWS FROM LINK2 AS WELL
+  else if (server_state(data->link2) == FREE) {
+    start_transmission_on_link2(simulation_run, new_packet, data->link2);     //start transmission function 
   }
+
+
 
   /* 
    * Schedule the next packet arrival. Independent, exponentially distributed
