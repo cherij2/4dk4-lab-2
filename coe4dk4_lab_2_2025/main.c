@@ -108,6 +108,7 @@ main(void)
 
     data.buffer = fifoqueue_new();
     data.link   = server_new();
+    data.link2   = server_new();
 
     /* 
      * Set the random number generator seed for this run.
