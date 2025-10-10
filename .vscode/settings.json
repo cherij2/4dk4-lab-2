@@ -5,6 +5,8 @@
         "packet_transmission.h": "c",
         "cleanup_memory.h": "c",
         "functional": "c",
-        "simparameters.h": "c"
+        "simparameters.h": "c",
+        "istream": "c",
+        "ostream": "c"
     }
 }

@@ -118,7 +118,7 @@ void CSVClose() {
  * starts the transmission of the next packet.
  */
 void
-end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void * link)
+end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void * link) //link = server
 {
   Simulation_Run_Data_Ptr data;
   Packet_Ptr this_packet, next_packet;
@@ -131,7 +131,7 @@ end_packet_transmission_event(Simulation_Run_Ptr simulation_run, void * link)
    * Packet transmission is finished. Take the packet off the data link.
    */
 
-  this_packet = (Packet_Ptr) server_get(link);
+  this_packet = (Packet_Ptr) server_get(link);    //sets srever to free
 
   /* Collect statistics. */
   //PT 3, ADDING IMPLEMENTATION OF DELAY PER PACKET
@@ -267,7 +267,7 @@ start_transmission_on_link(Simulation_Run_Ptr simulation_run,
 {
   TRACE(printf("Start Of Packet.\n");)
 
-  server_put(link, (void*) this_packet);
+  server_put(link, (void*) this_packet);      //takes this_packet out of queue, and puts in link(server)
   this_packet->status = XMTTING;
 
   /* Schedule the end of packet transmission event. */
