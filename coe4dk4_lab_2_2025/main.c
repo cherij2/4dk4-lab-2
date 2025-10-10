@@ -74,7 +74,7 @@ main(void)
    */
   
   //for loop  for PACKET_ARRIVAL_RATE array in simparameters.h
-  CSVInit("PART3_DELAY.csv");
+  CSVInit(CSV_FILENAME);
   while((arr_rates = ARRIVAL_RATES[i++]) != 0) {
     j = 0;
     

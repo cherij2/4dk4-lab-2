@@ -91,10 +91,10 @@ output_results(Simulation_Run_Ptr simulation_run)
   // printf("Mean Delay (msec) = %.2f \n",
 	//  1e3*data->accumulated_delay/data->number_of_packets_processed);
   float delay_percentage = ((float)data->delay_above_20ms / (float)data->number_of_packets_processed);
-  printf("%f,%d,%.2f\n %ld, %ld, %f \n\n" , data->arrival_rate, data->random_seed, 1e3*data->accumulated_delay/data->number_of_packets_processed, data->number_of_packets_processed, data->delay_above_20ms, delay_percentage);
+  printf("%f,%d,%.2f\n %ld, %f \n\n" , data->arrival_rate, data->random_seed, 1e3*data->accumulated_delay/data->number_of_packets_processed, data->number_of_packets_processed, (double)(data->number_of_packets_processed / get_packet_transmission_time()));
   //PART 3, CSV WRITER/CLOSE, FUCNTION of each IN PACKET_TRANSMIT.c
-  CSVNewLine("PART3_DELAY.csv");
-  CSVWriter(data->arrival_rate, data->delay_above_20ms, data->number_of_packets_processed , (double)delay_percentage);
+  CSVNewLine(CSV_FILENAME);
+  CSVWriter(data->arrival_rate, data->number_of_packets_processed, data->accumulated_delay/data->number_of_packets_processed, (double)(data->number_of_packets_processed / get_packet_transmission_time()));
   
   // FILE *fp = fopen("simulation_results.csv", "w");
   // fprintf(fp, "%f,%d,%.2f\n" , data->arrival_rate, data->random_seed, 1e3*data->accumulated_delay/data->number_of_packets_processed);

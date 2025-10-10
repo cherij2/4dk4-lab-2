@@ -28,15 +28,17 @@
 
 /******************************************************************************/
 // CHANGED !!!!
-#define PACKET_ARRIVAL_RATE 402, 403, 404, 405    /* packets per second */ 
-#define PACKET_LENGTH 2000 /* bits */
+#define PACKET_ARRIVAL_RATE 2000, 3000, 3900, 3950, 3975, 3980, 3985, 3990, 3995, 3997, 4000     /* packets per second */ 
+#define PACKET_LENGTH 500 /* bits */
 #define LINK_BIT_RATE 1e6 /* bits per second */
-#define RUNLENGTH 1e5 /* packets */ //reduced it for part 3, to try out more arrival rates quicker
+#define RUNLENGTH 10e4 /* packets */ //reduced it for part 3, to try out more arrival rates quicker
+
+#define CSV_FILENAME "PART4_DELAY.csv"
 
 /* Comma separated list of random seeds to run. */
-#define RANDOM_SEED_LIST 400381481, 400343389, 400345678, 400987654, 300987654, 200987654, 500987654, 500894209, 489567100, 999999777
+#define RANDOM_SEED_LIST 400381481, 400343389, 730345678, 170987654, 300987654, 200987654, 500987654, 500894209, 489567100, 999999777
 
-#define PACKET_XMT_TIME ((double) PACKET_LENGTH/LINK_BIT_RATE)
+#define PACKET_XMT_TIME ((double) PACKET_LENGTH/LINK_BIT_RATE)              //transmission time per packet, useful for Throughput equation
 #define BLIPRATE (RUNLENGTH/1000)
 
 /******************************************************************************/
