@@ -50,6 +50,8 @@ typedef struct _simulation_run_data_
   Fifoqueue_Ptr buffer;
   Server_Ptr link;
   Server_Ptr link2;
+  double sim_start_time;
+  double sim_end_time;
   long int blip_counter;
   long int arrival_count;
   long int number_of_packets_processed;
@@ -60,7 +62,10 @@ typedef struct _simulation_run_data_
   long int delay_above_20ms;
 } Simulation_Run_Data, * Simulation_Run_Data_Ptr;
 
+
 typedef enum {XMTTING, WAITING} Packet_Status;
+              //free, busy
+
 
 //packets coming into and out of buffer in part 2 
 typedef struct _packet_ 

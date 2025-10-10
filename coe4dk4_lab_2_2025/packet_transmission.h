@@ -37,7 +37,7 @@
  */
 void CSVInit(const char*);
 void CSVNewLine(const char*);
-void CSVWriter(double, long int, long int, double);
+void CSVWriter(double, long int, double, double);
 void CSVClose();
 
 void

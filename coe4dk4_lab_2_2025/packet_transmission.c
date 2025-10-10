@@ -88,6 +88,7 @@ void CSVInit(const char* file) {
   struct tm *t = localtime(&now);        //getting the time now
   /*FILE**/ LAB2_Excel = fopen(file, "a"); //the FILE* made it a local variable and functions were writing to NULL because global variable was destroyed
   fprintf(LAB2_Excel, "NEW_TRIAL, %02d:%02d:%02d \n Arrival Rate, Total Packets Processed, mean_delay, throughput \n", t->tm_hour, t->tm_min, t->tm_sec);
+  fflush(LAB2_Excel);
 }
 
 void CSVNewLine(const char* file) {
@@ -97,7 +98,7 @@ void CSVNewLine(const char* file) {
 // just wanted to try implementation of writing every single line of data, since there is 10 million packets i am commenting that
 //making it print just the final value, of all delay counts etc
 void CSVWriter(double arr_rate, long int total_number_processed, double mean_delay, double throughput) { 
-  fprintf(LAB2_Excel, "%f, %d, %ld, %f \n", arr_rate, total_number_processed, mean_delay, throughput);
+  fprintf(LAB2_Excel, "%f, %ld, %f, %f \n", arr_rate, total_number_processed, mean_delay, throughput);
   fflush(LAB2_Excel);     
 }
 

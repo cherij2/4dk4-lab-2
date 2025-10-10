@@ -7,6 +7,12 @@
         "functional": "c",
         "simparameters.h": "c",
         "istream": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "limits": "c",
+        "numeric": "c",
+        "streambuf": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     }
 }

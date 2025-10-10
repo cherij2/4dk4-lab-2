@@ -61,9 +61,6 @@ main(void)
   unsigned arr_rates;
   unsigned random_seed;
   
-  //LAB 3
-  double serv_rate = PACKET_LENGTH / LINK_BIT_RATE; 
-  double serv_time = 1/serv_rate; // we want this to be less than 20ms for 98% of the time
   
   int j=0;
   int i=0;
@@ -106,10 +103,12 @@ main(void)
      * Create the packet buffer and transmission link, declared in main.h.
      */
 
-    data.buffer = fifoqueue_new();
-    data.link   = server_new();
-    data.link2   = server_new();
+    data.buffer = fifoqueue_new(); //queue
+    data.link   = server_new();    //output (server)
+    data.link2   = server_new();  //output2 (server2)
 
+
+    data.sim_start_time = simulation_run_get_time(simulation_run);  //PART 4, to get total sim time for throughput
     /* 
      * Set the random number generator seed for this run.
      */
@@ -145,6 +144,7 @@ main(void)
      * Output results and clean up after ourselves.
      */
 
+    data.sim_end_time = simulation_run_get_time(simulation_run); //PART 4, to get total sim time for throughput
     output_results(simulation_run);
     cleanup_memory(simulation_run);
   }
