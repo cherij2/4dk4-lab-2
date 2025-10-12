@@ -35,7 +35,7 @@
  */
 
 void
-output_progress_msg_to_screen(Simulation_Run_Ptr simulation_run)
+output_progress_msg_to_screen_1(Simulation_Run_Ptr simulation_run)
 {
   double percentage_done;
   Simulation_Run_Data_Ptr data;
@@ -46,12 +46,70 @@ output_progress_msg_to_screen(Simulation_Run_Ptr simulation_run)
 
   if((data->blip_counter >= BLIPRATE)
      ||
-     (data->number_of_packets_processed >= RUNLENGTH)) {
+     (data->number_of_packets_processed_1 >= RUNLENGTH)) {
 
     data->blip_counter = 0;
 
     percentage_done =
-      100 * (double) data->number_of_packets_processed/RUNLENGTH;
+      100 * (double) data->number_of_packets_processed_1/RUNLENGTH;
+
+    //printf("%3.0f%% ", percentage_done);
+
+    //printf("Successfully Xmtted Pkts  = %ld (Arrived Pkts = %ld) \r", 
+	  // data->number_of_packets_processed, data->arrival_count);
+
+    fflush(stdout);
+  }
+
+}
+
+void
+output_progress_msg_to_screen_2(Simulation_Run_Ptr simulation_run)
+{
+  double percentage_done;
+  Simulation_Run_Data_Ptr data;
+
+  data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+  data->blip_counter++;
+
+  if((data->blip_counter >= BLIPRATE)
+     ||
+     (data->number_of_packets_processed_2 >= RUNLENGTH)) {
+
+    data->blip_counter = 0;
+
+    percentage_done =
+      100 * (double) data->number_of_packets_processed_2/RUNLENGTH;
+
+    //printf("%3.0f%% ", percentage_done);
+
+    //printf("Successfully Xmtted Pkts  = %ld (Arrived Pkts = %ld) \r", 
+	  // data->number_of_packets_processed, data->arrival_count);
+
+    fflush(stdout);
+  }
+
+}
+
+void
+output_progress_msg_to_screen_3(Simulation_Run_Ptr simulation_run)
+{
+  double percentage_done;
+  Simulation_Run_Data_Ptr data;
+
+  data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+  data->blip_counter++;
+
+  if((data->blip_counter >= BLIPRATE)
+     ||
+     (data->number_of_packets_processed_3 >= RUNLENGTH)) {
+
+    data->blip_counter = 0;
+
+    percentage_done =
+      100 * (double) data->number_of_packets_processed_3/RUNLENGTH;
 
     //printf("%3.0f%% ", percentage_done);
 
@@ -71,7 +129,6 @@ output_progress_msg_to_screen(Simulation_Run_Ptr simulation_run)
 void
 output_results(Simulation_Run_Ptr simulation_run)
 {
-  double xmtted_fraction;
   Simulation_Run_Data_Ptr data;
 
   data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
@@ -80,8 +137,8 @@ output_results(Simulation_Run_Ptr simulation_run)
   // printf("Random Seed = %d \n", data->random_seed);
   // printf("Packet arrival count = %ld \n", data->arrival_count);
 
-  xmtted_fraction = (double) data->number_of_packets_processed /
-    data->arrival_count;
+  // xmtted_fraction = (double) data->number_of_packets_processed /
+  //   data->arrival_count;
 
   // printf("Transmitted packet count  = %ld (Service Fraction = %.5f)\n",
 	//  data->number_of_packets_processed, xmtted_fraction);
@@ -90,16 +147,16 @@ output_results(Simulation_Run_Ptr simulation_run)
 
   // printf("Mean Delay (msec) = %.2f \n",
 	//  1e3*data->accumulated_delay/data->number_of_packets_processed);
-  float delay_percentage = ((float)data->delay_above_20ms / (float)data->number_of_packets_processed);
-  float throughput = (float)((float)data->number_of_packets_processed / (float)(data->sim_end_time - data->sim_start_time) );
-  printf("\n\nSim start/end: %f \t %f \n", data->sim_start_time, data->sim_end_time);
-  printf("total_packets_transmitted: %ld \n\n", data->number_of_packets_processed);
+  // float delay_percentage = ((float)data->delay_above_20ms / (float)data->number_of_packets_processed);
+  // float throughput = (float)((float)data->number_of_packets_processed / (float)(data->sim_end_time - data->sim_start_time) );
+  // printf("\n\nSim start/end: %f \t %f \n", data->sim_start_time, data->sim_end_time);
+  // printf("total_packets_transmitted: %ld \n\n", data->number_of_packets_processed);
 
-
-  printf("%f,%d,%.2f\n %ld, %f \n\n" , data->arrival_rate, data->random_seed, (float)(1e3*data->accumulated_delay / (float)data->number_of_packets_processed) , data->number_of_packets_processed, throughput); // total # packet / total service time  
+  printf("This is total number of packets processed: %ld \n", (data->number_of_packets_processed_2 + data->number_of_packets_processed_3));
+  printf("%f,%f,%f, %f \n\n" , data->p12, ((float)(data->accumulated_delay_1+(float)(data->accumulated_delay_2+(float)(data->accumulated_delay_3)) / (float)data->number_of_packets_processed_1)), (float)(data->accumulated_delay_2 / (float)data->number_of_packets_processed_2), (float)(data->accumulated_delay_3 / (float)data->number_of_packets_processed_3)); // total # packet / total service time  
   //PART 3, CSV WRITER/CLOSE, FUCNTION of each IN PACKET_TRANSMIT.c
   CSVNewLine(CSV_FILENAME);
-  CSVWriter(data->arrival_rate, data->number_of_packets_processed, (float)(data->accumulated_delay / (float)data->number_of_packets_processed), throughput);
+  CSVWriter(data->p12, ((float)(data->accumulated_delay_1+(float)(data->accumulated_delay_2+(float)(data->accumulated_delay_3)) / (float)data->number_of_packets_processed_1)), (float)(data->accumulated_delay_2 / (float)data->number_of_packets_processed_2), (float)(data->accumulated_delay_3 / (float)data->number_of_packets_processed_3));
   
   // FILE *fp = fopen("simulation_results.csv", "w");
   // fprintf(fp, "%f,%d,%.2f\n" , data->arrival_rate, data->random_seed, 1e3*data->accumulated_delay/data->number_of_packets_processed);

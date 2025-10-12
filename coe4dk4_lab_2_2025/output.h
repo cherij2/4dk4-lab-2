@@ -38,7 +38,13 @@
  */
 
 void
-output_progress_msg_to_screen(Simulation_Run_Ptr);
+output_progress_msg_to_screen_1(Simulation_Run_Ptr);
+
+void
+output_progress_msg_to_screen_2(Simulation_Run_Ptr);
+
+void
+output_progress_msg_to_screen_3(Simulation_Run_Ptr);
 
 void
 output_results(Simulation_Run_Ptr);

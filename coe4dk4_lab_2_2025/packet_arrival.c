@@ -43,77 +43,133 @@
  */
 
 long int
-schedule_packet_arrival_event(Simulation_Run_Ptr simulation_run,
+schedule_packet_arrival_event1(Simulation_Run_Ptr simulation_run,
 			      double event_time)
 {
   Event event;
 
-  event.description = "Packet Arrival";
-  event.function = packet_arrival_event;
+  event.description = "Packet Arrival1";
+  event.function = packet_arrival_event1;
   event.attachment = (void *) NULL;
-
   return simulation_run_schedule_event(simulation_run, event, event_time);
 }
 
-/******************************************************************************/
+long int
+schedule_packet_arrival_event2(Simulation_Run_Ptr simulation_run,
+			      double event_time)
+{
+  Event event;
 
-/*
- * This is the event function which is executed when a packet arrival event
- * occurs. 
- * 
- * It creates a new packet object and places it in either the fifo
- * queue if the server is busy. 
- * 
- * Otherwise it starts the transmission of the
- * packet. 
- * 
- * It then schedules the next packet arrival event.
- */
+  event.description = "Packet Arrival2";
+  event.function = packet_arrival_event2;
+  event.attachment = (void *) NULL;
+  return simulation_run_schedule_event(simulation_run, event, event_time);
+}
+
+long int
+schedule_packet_arrival_event3(Simulation_Run_Ptr simulation_run,
+			      double event_time)
+{
+  Event event;
+
+  event.description = "Packet Arrival3";
+  event.function = packet_arrival_event3;
+  event.attachment = (void *) NULL;
+  return simulation_run_schedule_event(simulation_run, event, event_time);
+}
+
 
 void
-packet_arrival_event(Simulation_Run_Ptr simulation_run, void * ptr)
+packet_arrival_event1(Simulation_Run_Ptr simulation_run, void * ptr)
 {
   Simulation_Run_Data_Ptr data;
   Packet_Ptr new_packet;
 
   data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
-  data->arrival_count++;
 
   new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));                  //make new packet datatype
   new_packet->arrive_time = simulation_run_get_time(simulation_run);  //get the arrival time/start time of the packet, and set it to arrive time member
-  new_packet->service_time = get_packet_transmission_time();          // PACKET_LENGTH/LINK_BIT_RATE, (bits * sec / bit) how many seconds for each packet to service
+  //new_packet->service_time = get_packet_transmission_time();          // PACKET_LENGTH/LINK_BIT_RATE, (bits * sec / bit) how many seconds for each packet to service
   new_packet->status = WAITING;
-
+  new_packet->source_id = 1;
   /* 
    * Start transmission if the data link is free. Otherwise put the packet into
    * the buffer.
    */
 
-  //WE NEED TO MODIFY THIS FOR PT 3
-  //ADD START AND END TIMES, VARIABLE TO TRACK HOW MANY PACKETS EXCEED 20 MS WAIT
+  if(server_state(data->link1) == FREE){
+    start_transmission_on_link1(simulation_run, new_packet, data->link1); //if link is free, start transmission
+  } else {
+    fifoqueue_put(data->buffer1, (void*) new_packet);                    //else put it in the buffer
+  }
 
-  //WE NEED TO ADD ANOTHER SERVER(DATA->LINK) FOR PT 4
+  schedule_packet_arrival_event1(simulation_run,
+            simulation_run_get_time(simulation_run) +
+            exponential_generator(1.0 / PACKET_ARRIVAL_RATE_1)); // schedule next arrival for source 1
+  }
 
-  if(server_state(data->link) == BUSY && server_state(data->link2) == BUSY) {
-    fifoqueue_put(data->buffer, (void*) new_packet);                        //put in buffer
-  } else if (server_state(data->link) == FREE) {
-    start_transmission_on_link(simulation_run, new_packet, data->link);     //start transmission function 
-  }                                                                          //PT4 WE HAVE TO ADD CONDITIONALS ARGUMENTS TO IF/ELSE STATEMENT SO THAT IT DRAWS FROM LINK2 AS WELL
-  else if (server_state(data->link2) == FREE) {
-    start_transmission_on_link2(simulation_run, new_packet, data->link2);     //start transmission function 
+  void
+packet_arrival_event2(Simulation_Run_Ptr simulation_run, void * ptr)
+{
+  Simulation_Run_Data_Ptr data;
+  Packet_Ptr new_packet;
+
+  data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+  new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));                  //make new packet datatype
+  new_packet->arrive_time = simulation_run_get_time(simulation_run);  //get the arrival time/start time of the packet, and set it to arrive time member
+  //new_packet->service_time = get_packet_transmission_time();          // PACKET_LENGTH/LINK_BIT_RATE, (bits * sec / bit) how many seconds for each packet to service
+  new_packet->status = WAITING;
+  new_packet->source_id = 2;
+  /* 
+   * Start transmission if the data link is free. Otherwise put the packet into
+   * the buffer.
+   */
+
+  if(server_state(data->link2) == FREE){
+    start_transmission_on_link2(simulation_run, new_packet, data->link2); //if link is free, start transmission
+  } else {
+    fifoqueue_put(data->buffer2, (void*) new_packet);                    //else put it in the buffer
+  }
+
+  schedule_packet_arrival_event2(simulation_run,
+            simulation_run_get_time(simulation_run) +
+            exponential_generator(1.0 / PACKET_ARRIVAL_RATE_2)); // schedule next arrival for source 2
+  }
+
+
+  void
+packet_arrival_event3(Simulation_Run_Ptr simulation_run, void * ptr)
+{
+  Simulation_Run_Data_Ptr data;
+  Packet_Ptr new_packet;
+
+  data = (Simulation_Run_Data_Ptr) simulation_run_data(simulation_run);
+
+  new_packet = (Packet_Ptr) xmalloc(sizeof(Packet));                  //make new packet datatype
+  new_packet->arrive_time = simulation_run_get_time(simulation_run);  //get the arrival time/start time of the packet, and set it to arrive time member
+  //new_packet->service_time = get_packet_transmission_time();          // PACKET_LENGTH/LINK_BIT_RATE, (bits * sec / bit) how many seconds for each packet to service
+  new_packet->status = WAITING;
+  new_packet->source_id = 3;
+  /* 
+   * Start transmission if the data link is free. Otherwise put the packet into
+   * the buffer.
+   */
+
+  if(server_state(data->link3) == FREE){
+    start_transmission_on_link3(simulation_run, new_packet, data->link3); //if link is free, start transmission
+  } else {
+    fifoqueue_put(data->buffer3, (void*) new_packet);                    //else put it in the buffer
+  }
+
+  schedule_packet_arrival_event3(simulation_run,
+            simulation_run_get_time(simulation_run) +
+            exponential_generator(1.0 / PACKET_ARRIVAL_RATE_3)); // schedule next arrival for source 3
   }
 
 
 
-  /* 
-   * Schedule the next packet arrival. Independent, exponentially distributed
-   * interarrival times gives us Poisson process arrivals.
-   */
 
-  schedule_packet_arrival_event(simulation_run,
-			simulation_run_get_time(simulation_run) +
-			exponential_generator((double) 1/data->arrival_rate));
-}
 
 
 

@@ -44,8 +44,7 @@
  * event. When each run is finished, output is printed on the terminal.
  */
 
-int
-main(void)
+int main(void)
 {
   Simulation_Run_Ptr simulation_run;
   Simulation_Run_Data data;
@@ -56,25 +55,22 @@ main(void)
    */
 
   unsigned RANDOM_SEEDS[] = {RANDOM_SEED_LIST, 0};
-  unsigned ARRIVAL_RATES[] = {PACKET_ARRIVAL_RATE, 0};
-  //LAB 2 
-  unsigned arr_rates;
   unsigned random_seed;
-  
-  
-  int j=0;
+  double PROBABILITY_12_LIST[] = {PROBABILITY_12, 0};
+  double p12;
   int i=0;
+  
+  
 
   /* 
    * Loop for each random number generator seed, doing a separate
    * simulation_run run for each.
    */
-  
-  //for loop  for PACKET_ARRIVAL_RATE array in simparameters.h
-  CSVInit(CSV_FILENAME);
-  while((arr_rates = ARRIVAL_RATES[i++]) != 0) {
-    j = 0;
-    
+
+ CSVInit(CSV_FILENAME); 
+ while((p12 = PROBABILITY_12_LIST[i++]) != 0) {
+   
+  int j=0;  
   while ((random_seed = RANDOM_SEEDS[j++]) != 0) {
 
     simulation_run = simulation_run_new(); /* Create a new simulation run. */
@@ -88,24 +84,33 @@ main(void)
     /* 
      * Initialize the simulation_run data variables, declared in main.h.
      */
-    
+    data.p12 = p12;
+    data.n_done_S1 = data.n_done_S2 = data.n_done_S3 = 0;
+    data.delay_sum_S1 = data.delay_sum_S2 = data.delay_sum_S3 = 0.0;
+    data.n_s1_to_l2 = data.n_s1_to_l3 = 0;
     data.blip_counter = 0;
-    data.arrival_count = 0;
-    data.number_of_packets_processed = 0;
-    data.accumulated_delay = 0.0;
+    data.arrival_count_1 = 0;
+    data.arrival_count_2 = 0;
+    data.arrival_count_3 = 0;
+    data.number_of_packets_processed_1 = 0;
+    data.number_of_packets_processed_2 = 0;
+    data.number_of_packets_processed_3 = 0;
+    data.accumulated_delay_1 = 0.0;
+    data.accumulated_delay_2 = 0.0;
+    data.accumulated_delay_3 = 0.0;
     data.random_seed = random_seed;
-    //LAB2
-    data.arrival_rate = arr_rates;
-    data.delay_above_20ms = 0;
-
+    
 
     /* 
      * Create the packet buffer and transmission link, declared in main.h.
      */
 
-    data.buffer = fifoqueue_new(); //queue
-    data.link   = server_new();    //output (server)
+    data.buffer1 = fifoqueue_new(); //queue1
+    data.buffer2 = fifoqueue_new(); //queue2
+    data.buffer3 = fifoqueue_new(); //queue3
+    data.link1   = server_new();    //output (server)
     data.link2   = server_new();  //output2 (server2)
+    data.link3   = server_new();  //output3 (server3)
 
 
     data.sim_start_time = simulation_run_get_time(simulation_run);  //PART 4, to get total sim time for throughput
@@ -119,27 +124,21 @@ main(void)
      * Schedule the initial packet arrival for the current clock time (= 0).
      */
 
-    schedule_packet_arrival_event(simulation_run,           //set the .function member of simulation run to packet_arrival_event, this function runs every packet for arrivals + sets up and runs transmission function
-				  simulation_run_get_time(simulation_run));         //set the start time of this event
+    schedule_packet_arrival_event1(simulation_run,           
+				  simulation_run_get_time(simulation_run));         
+    schedule_packet_arrival_event2(simulation_run,           
+				  simulation_run_get_time(simulation_run)); 
+    schedule_packet_arrival_event3(simulation_run,           
+				  simulation_run_get_time(simulation_run)); 
 
-
-      //PART 3, CSV WRITER INIT, FUCNTION IN PACKET_TRANSMIT.c
-    
-    
-    
-    
     /* 
      * Execute events until we are finished. 
      */
     
-    while(data.number_of_packets_processed < RUNLENGTH) {
+    while((data.number_of_packets_processed_2 + data.number_of_packets_processed_3) < RUNLENGTH) {
       // printf("did another packet! \n");
       simulation_run_execute_event(simulation_run);        //runs the function in the .function member of simulation_run, also includes the .attatchement member of simulation_run in the running of .function  
     }
-
-    
-    
-
     /*
      * Output results and clean up after ourselves.
      */
@@ -148,11 +147,9 @@ main(void)
     output_results(simulation_run);
     cleanup_memory(simulation_run);
   }
-
-  // getchar();   /* Pause before finishing. */  
-}
-  CSVClose();
-  return 0;
+} 
+CSVClose();
+return 0;   
 }
 
 
